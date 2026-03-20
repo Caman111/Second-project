@@ -14,7 +14,7 @@ func main() {
 	handler := verify.NewHandler((service))
 
 	http.HandleFunc("/send", handler.SendEmailHandler)
-	http.HandleFunc("/verify", handler.VerifyHandler)
+	http.HandleFunc("/verify/", handler.VerifyHandler)
 	log.Println("Сервер запушен на :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
