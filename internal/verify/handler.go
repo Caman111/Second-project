@@ -48,14 +48,15 @@ func (h *Handler) SendEmailHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) VerifyHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	prefix := "/verify/"
-
 	if len(path) <= len(prefix) {
-		http.Error(w, "Неверный URL, нужно /verify/ID", http.StatusBadRequest)
+		http.Error(w, "ID не указан", http.StatusBadRequest)
 		return
 	}
-
 	id := path[len(prefix):]
-	fmt.Printf("Пришел запрос на верификацию. ID: %s\n", id)
-	fmt.Fprintf(w, "Проверка для ID: %s\n", id)
-
+	email, ok := h.Service.VerifyHash(id)
+	if !ok {
+		http.Error(w, "false", http.StatusNotFound)
+		return
+	}
+	fmt.Fprintf(w, "true: %s подтвержден", email)
 }
