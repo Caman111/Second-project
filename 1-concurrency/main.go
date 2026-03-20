@@ -14,7 +14,7 @@ func main() {
 
 	go func() {
 		for i := 0; i < 10; i++ {
-			num := r.Intn(101)
+			num := r.Intn(101)   
 			nums <- num
 		}
 		close(nums)
