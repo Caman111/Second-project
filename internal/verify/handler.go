@@ -29,7 +29,7 @@ func (h *Handler) SendEmailHandler(w http.ResponseWriter, r *http.Request) {
 	hash := h.Service.GenerateHash()
 	h.Service.SaveHash(hash, payload.Email)
 
-	link := fmt.Sprintf("http://localhost:8080/verify/%s", hash)
+	link := fmt.Sprintf("http://localhost:8081/verify/%s", hash)
 	if err := h.Service.SendEmail(payload.Email, link); err != nil {
 		http.Error(w, "Не удалось отправить письмо", http.StatusInternalServerError)
 		return
