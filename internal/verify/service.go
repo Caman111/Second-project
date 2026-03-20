@@ -46,26 +46,16 @@ func (s *Service) VerifyHash(hash string) (string, bool) {
 	if err != nil {
 		return "", false
 	}
-
 	var users map[string]string
 	if err := json.Unmarshal(file, &users); err != nil {
 		return "", false
 	}
-
-	var foundEmail string
-	found := false
-	for email, storedHash := range users {
-		if storedHash == hash {
-			foundEmail = email
-			found = true
-			delete(users, email)
-			break
-		}
-	}
-	if found {
+	email, ok := users[hash]
+	if ok {
+		delete(users, hash)
 		updatedFile, _ := json.MarshalIndent(users, "", "  ")
 		_ = os.WriteFile("users.json", updatedFile, 0644)
-		return foundEmail, true
+		return email, true
 	}
 
 	return "", false
