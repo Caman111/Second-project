@@ -27,18 +27,21 @@ func NewService(email, pass, addr string) *Service {
 	}
 }
 
-func (s *Service) SaveHash(hash string, email string) {
-	var users = make(map[string]string)
+func (s *Service) SaveHash(hash string, email string) error {
+	users := make(map[string]string)
+
 	content, err := os.ReadFile("users.json")
 	if err == nil {
 		json.Unmarshal(content, &users)
 	}
 	users[hash] = email
 
-	file, _ := json.MarshalIndent(users, "", "  ")
-	_ = os.WriteFile("users.json", file, 0644)
+	file, err := json.MarshalIndent(users, "", "  ")
+	if err != nil {
+		return err
+	}
 
-	fmt.Println("Хеш успешно привязан к почте в users.json")
+	return os.WriteFile("users.json", file, 0644)
 }
 
 func (s *Service) VerifyHash(hash string) (string, bool) {
