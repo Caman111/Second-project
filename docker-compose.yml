@@ -1,0 +1,16 @@
+services:
+  db:
+    container_name: biznes-db-container
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: my_pass
+      POSTGRES_DB: biznes
+    ports:
+      - "5433:5432"
+    volumes:
+      - biznes_db_data:/var/lib/postgresql
+
+volumes:
+  biznes_db_data:
