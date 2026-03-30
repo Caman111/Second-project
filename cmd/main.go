@@ -2,11 +2,13 @@ package main
 
 import (
 	"3-validation-api/config"
+	"3-validation-api/internal/auth"
 	"3-validation-api/internal/bizness"
 	"3-validation-api/internal/product"
 	"3-validation-api/internal/verify"
 	"3-validation-api/middleware"
 	"3-validation-api/pkg/db"
+	"fmt"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -20,7 +22,6 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("Не удалось подключить к БД: %v", err)
 	}
-	logrus.Info("База готова, миграции прошли успешно!")
 
 	prodHandler := &product.ProductHandler{DB: conn}
 	bizHandler := &bizness.BiznessHandler{DB: conn}
@@ -28,7 +29,6 @@ func main() {
 	service := verify.NewService(cfg.Email, cfg.Password, cfg.Address)
 	verifyHandler := verify.NewHandler(service)
 
-	logrus.SetFormatter(&logrus.JSONFormatter{})
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /products", prodHandler.Create)
@@ -42,10 +42,16 @@ func main() {
 	mux.HandleFunc("DELETE /bizness/{id}", bizHandler.Delete)
 
 	mux.HandleFunc("/send", verifyHandler.SendEmailHandler)
-	mux.HandleFunc("/verify/", verifyHandler.VerifyHandler)
+
+	authRepo := auth.NewAuthRepository()
+	authHandler := &auth.AuthHandler{Repo: authRepo}
+
+	mux.HandleFunc("POST /auth/login", authHandler.Login())
+	mux.HandleFunc("POST /auth/verify", authHandler.Verify())
+	mux.HandleFunc("/auth/me", middleware.AuthMiddleware(authHandler.GetProfile))
 
 	finalHandler := middleware.JSONLog(mux)
 
-	logrus.Info("Сервер запущен на :8081")
+	fmt.Println("Сервер запущен на :8081")
 	logrus.Fatal(http.ListenAndServe(":8081", finalHandler))
 }
