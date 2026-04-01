@@ -25,9 +25,9 @@ func NewAuthRepository() *AuthRepository {
 }
 
 func (r *AuthRepository) CheckLimit(phone string) error {
-	r.mu.RLock()
+	r.mu.Lock()
 	lastTime, ok := r.lastRequests[phone]
-	r.mu.RUnlock()
+	r.mu.Unlock()
 
 	if ok && time.Since(lastTime) < 1*time.Minute {
 		secondsLeft := int(60 - time.Since(lastTime).Seconds())
