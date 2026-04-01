@@ -41,17 +41,15 @@ func (h *Handler) SendEmailHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) VerifyHandler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path
-	prefix := "/verify/"
-	if len(path) <= len(prefix) {
-		http.Error(w, "ID не указан", http.StatusBadRequest)
-		return
+	var data struct {
+		SessionID string `json:"sessionId"`
 	}
-	id := path[len(prefix):]
-	email, ok := h.Service.VerifyHash(id)
+	json.NewDecoder(r.Body).Decode(&data)
+
+	email, ok := h.Service.VerifyHash(data.SessionID)
 	if !ok {
-		http.Error(w, "false", http.StatusNotFound)
+		http.Error(w, "false", 401)
 		return
 	}
-	fmt.Fprintf(w, "true: %s подтвержден", email)
+	fmt.Fprintf(w, "true: %s", email)
 }
