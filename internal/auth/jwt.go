@@ -20,7 +20,7 @@ func ParseToken(tokenString string) (string, error) {
 		return "", err
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		phone, _ := claims["email"].(string)
+		phone, _ := claims["phone"].(string)
 		return phone, nil
 	}
 

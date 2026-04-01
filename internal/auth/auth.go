@@ -109,7 +109,6 @@ func (h *AuthHandler) Verify() http.HandlerFunc {
 
 		fmt.Printf("В базе код: [%s] | Ты прислал: [%s]\n", session.Code, req.Code)
 
-		// 3. Проверяем код
 		if session.Code != req.Code {
 			fmt.Println("РЕЗУЛЬТАТ: Коды не совпали!")
 			w.Header().Set("Content-Type", "application/json")
