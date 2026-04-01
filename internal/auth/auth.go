@@ -24,11 +24,6 @@ type LoginResponse struct {
 	SessionID string `json:"sessionId"`
 }
 
-func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"message": "Доступ разрешен."}`))
-}
-
 func sendRealSMS(phone, code string) error {
 	apiID := os.Getenv("SMS_API_ID")
 	if apiID == "" {

@@ -4,6 +4,7 @@ import (
 	"3-validation-api/config"
 	"3-validation-api/internal/auth"
 	"3-validation-api/internal/bizness"
+	"3-validation-api/internal/handler"
 	"3-validation-api/internal/product"
 	"3-validation-api/internal/verify"
 	"3-validation-api/middleware"
@@ -45,10 +46,12 @@ func main() {
 
 	authRepo := auth.NewAuthRepository()
 	authHandler := &auth.AuthHandler{Repo: authRepo}
+	orderHandler := &handler.OrderHandler{}
 
 	mux.HandleFunc("POST /auth/login", authHandler.Login())
 	mux.HandleFunc("POST /auth/verify", authHandler.Verify())
-	mux.HandleFunc("/auth/me", middleware.AuthMiddleware(authHandler.GetProfile))
+	mux.Handle("GET /auth/me", middleware.AuthMiddleware(http.HandlerFunc(authHandler.GetProfile)))
+	mux.Handle("POST /buy", middleware.AuthMiddleware(http.HandlerFunc(orderHandler.CreateOrder)))
 
 	finalHandler := middleware.JSONLog(mux)
 
