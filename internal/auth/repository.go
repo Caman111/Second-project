@@ -59,7 +59,7 @@ func (r *AuthRepository) GetSession(sessionId string) (Session, bool) {
 }
 
 func (r *AuthRepository) DeleteSession(id string) {
-    r.mu.Lock()
-    defer r.mu.Lock()
-    delete(r.sessions, id)
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	delete(r.sessions, id)
 }
